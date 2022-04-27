@@ -206,9 +206,23 @@ function exportImage(layerName, usePageItemName) {
 //3. 레이어별 파일 출
 //4. 레이어 삭제
     hideAllLayers();
-    for(var i = 0; i<selectedLayer.pageItems.length; i++){
+	
+	var pageItems = [];
+	for(var i = 0; i<selectedLayer.pageItems.length; i++){
+		pageItems.push(selectedLayer.pageItems[i]);
+	}
+	pageItems.sort(function(a,b){
+		//Top 기준으로 내림차순
+		//Top의 Gap 이하면 Left 기준 오름차순
+		var gap = 30;
+		var bndA = a.geometricBounds;
+		var bndB = b.geometricBounds;
+		return bndA[1] - bndB[1] < gap ? bndA[0] - bndB[0] : bndB[1] - bndA[1];
+	});
+	
+    for(var i = 0; i<pageItems.length; i++){
         //1. 바로 밑 GroupItem 추출
-        var pageItem = selectedLayer.pageItems[i];
+        var pageItem = pageItems[i];
         var newLayer = document.layers.add();
         newLayer.name = pageItem.name;
         newLayer.visible = true;
