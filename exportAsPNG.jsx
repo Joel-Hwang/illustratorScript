@@ -217,9 +217,12 @@ function exportImage(layerName, usePageItemName) {
 		var gap = 30;
 		var bndA = a.geometricBounds;
 		var bndB = b.geometricBounds;
-		return bndA[1] - bndB[1] < gap ? bndA[0] - bndB[0] : bndB[1] - bndA[1];
+
+		var midA = (bndA[1] + bndA[3])/2;
+		var midB = (bndB[1] + bndB[3])/2;
+		return Math.abs( midA - midB ) < gap ? bndA[0] - bndB[0] : bndB[1] - bndA[1];
 	});
-	
+
     for(var i = 0; i<pageItems.length; i++){
         //1. 바로 밑 GroupItem 추출
         var pageItem = pageItems[i];
