@@ -1,7 +1,7 @@
 #target Illustrator
 if (app.documents.length>0) {
-	//showDialog();
-	makeGroups();
+	if(selection.length == 0) showDialog();
+	else makeGroups();
 }
 else alert('Cancelled by user');
 
@@ -49,7 +49,7 @@ function showDialog(){
 	
 		var num = parseInt(layerList.selection);
 		//alert(dirEt.text +" : "+docRef.layers[num] );
-		makeGroups(docRef.layers[num].name); 
+		exportImage(docRef.layers[num].name, true); 
 		dlog.close();
 		
 	};
@@ -176,7 +176,7 @@ function getDistance(s1, s2) {
 }
 
 //특정 레이어의 도형들을 이미지로 익스포트
-function exportImage(layerName) {
+function exportImage(layerName, usePageItemName) {
     var document = app.activeDocument;
     var afile = document.fullName;
     var filename = afile.name.split('.')[0];
@@ -199,8 +199,6 @@ function exportImage(layerName) {
     options.antiAliasing = true;
     options.transparency = true;
 
-    var n = document.groupItems.length;
-
     var selectedLayer = document.layers[layerName];
 //Layer 선택
 //1. 바로 밑 GroupItem 추출
@@ -208,25 +206,16 @@ function exportImage(layerName) {
 //3. 레이어별 파일 출
 //4. 레이어 삭제
     hideAllLayers();
-    for(var i = 0; i<selectedLayer.groupItems.length; i++){
+    for(var i = 0; i<selectedLayer.pageItems.length; i++){
         //1. 바로 밑 GroupItem 추출
-        var groupItem = selectedLayer.groupItems[i];
+        var pageItem = selectedLayer.pageItems[i];
         var newLayer = document.layers.add();
-        newLayer.name = groupItem.name;
+        newLayer.name = pageItem.name;
         newLayer.visible = true;
         //2. 각 그룹 아이템을 새로운 레이어에 저장
-        groupItem.duplicate(newLayer,ElementPlacement.PLACEATBEGINNING);
+        pageItem.duplicate(newLayer,ElementPlacement.PLACEATBEGINNING);
         //3. 레이어별 파일 출력
-		/*var d = new Date();
-		var year = d.getFullYear();
-		var month = d.getMonth()+1;
-		var day = d.getDate();
-		var hour = d.getHours();
-		var min = d.getMinutes();
-		var sec = d.getSeconds();
-		var ms = d.getMilliseconds();
-		var fileName = year+"-"+ month+"-"+day +" "+ hour+"."+min +"."+ sec +"."+ ms;*/
-		var fileName = Date.now();
+		var fileName = usePageItemName ? pageItem.name : Date.now();
         var file = new File(folder.fsName + '/' +fileName+".png");
         document.exportFile(file,ExportType.PNG24,options);
         //4. 레이어 삭제
