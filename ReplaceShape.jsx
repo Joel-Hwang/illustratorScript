@@ -40,27 +40,43 @@ function showDialog(){
 	// OK button
 	var okBtn = row.add('button', undefined, 'Replace', {name:'ok'});
 	okBtn.onClick = function() { 
-        replaceShape(from.text,to.text);
+        replaceShape(from.text,to.text, selection);
 		dlog.close();
 	};
 	
 	dlg.show();
 }
 
-function replaceShape(from, to){
+function replaceShape(from, to, array){
 /*
 From에 VAMP 넣고 To에 VAMP2 넣고 Replace 하면 기존 VAMP도형(DFS서치) 싹 찾아서 VAMP2로 교체. 위치 및 크기 똑같이 조정
 */
-    alert(selection.length);
+    alert(array.length);
     var fromShapes = [];
 	var toShape = {};
-    for (var i = 0; i < selection.length; i++){
-        var item = selection[i];
+    for (var i = 0; i < array.length; i++){
+        var item = array[i];
+		alert(item.typename);
         if(item.name == from){
             fromShapes.push(item);
         }else if(item.name == to){
             toShape = item;
-        }	
+        }else if(item.typename === "GroupItem"){
+			var stack = [];
+			stack.push(item);
+			while(stack.length>0){
+				var stkItem = stack.pop();
+				for(var j = 0; j<stkItem.pageItems.length; j++){
+					if(stkItem.pageItems[j].name == from){
+						fromShapes.push(stkItem.pageItems[j]);
+					}else if(stkItem.pageItems[j].name == to){
+						toShape = stkItem.pageItems[j];
+					}else if(stkItem.pageItems[j].typename === "GroupItem"){
+						stack.push(stkItem.pageItems[j]);
+					}
+				}
+			}
+		}
     }
 	alert(fromShapes.length)
 	for(var i = 0; i<fromShapes.length; i++){
@@ -69,10 +85,16 @@ From에 VAMP 넣고 To에 VAMP2 넣고 Replace 하면 기존 VAMP도형(DFS서�
 		temp.left = fromShapes[i].left;
 		temp.width = fromShapes[i].width;
 		temp.height = fromShapes[i].height;
+		
+		//alert(fromShapes[i].zOrder(ZOrderMethod.SENDTOBACK));
 		fromShapes[i].remove();
+		
 	}
 	
 	alert("Done")
 	
+	
+
+
 
 }
