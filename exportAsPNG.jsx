@@ -70,10 +70,9 @@ function makeGroups(layerName){
 	groupItems.sort(function(a, b){ return a.geometricBounds[0] - b.geometricBounds[0]; });
 	for(var i = 0; i<groupItems.length; i++){
 		var hasGroup = false;
-		
 		for(var j = 0; j<groups.length; j++){
 			var dist = getDistance(groups[j], groupItems[i]);
-			if(dist < 20){
+			if(dist < 40){
 				groupItems[i].duplicate(groups[j],ElementPlacement.PLACEATBEGINNING);
 				//group 아이템의 zIndex를 newGroupZindex 배열에 저장. unshift는 맨 앞에 추가
 				var newGroupZindex = groups[j].zIndex;
@@ -214,13 +213,17 @@ function exportImage(layerName, usePageItemName) {
 	pageItems.sort(function(a,b){
 		//Top 기준으로 내림차순
 		//Top의 Gap 이하면 Left 기준 오름차순
-		var gap = 30;
+		var gap = 50;
 		var bndA = a.geometricBounds;
 		var bndB = b.geometricBounds;
 
-		var midA = (bndA[1] + bndA[3])/2;
-		var midB = (bndB[1] + bndB[3])/2;
-		return Math.abs( midA - midB ) < gap ? bndA[0] - bndB[0] : bndB[1] - bndA[1];
+		var midA = bndA[1]//(bndA[1] + bndA[3])/2;
+		var midB = bndB[1]//(bndB[1] + bndB[3])/2;
+		//return Math.abs( midA - midB ) < gap ? bndA[0] - bndB[0] : bndB[1] - bndA[1];
+		var isOverlabbed = ( bndA[3] <=  bndB[3] && bndB[3] <= bndA[1] ) ||
+		  ( bndB[3] <=  bndA[3] && bndA[3] <= bndB[1]  );
+		return isOverlabbed ? bndA[0] - bndB[0] : bndB[1] - bndA[1];
+		
 	});
 
     for(var i = 0; i<pageItems.length; i++){
