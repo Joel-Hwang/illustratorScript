@@ -232,10 +232,25 @@ function exportImage(layerName, usePageItemName) {
         var newLayer = document.layers.add();
         newLayer.name = pageItem.name;
         newLayer.visible = true;
+		
         //2. 각 그룹 아이템을 새로운 레이어에 저장
         pageItem.duplicate(newLayer,ElementPlacement.PLACEATBEGINNING);
+		//2.5 GroupItem의 파트 이름 추출
+		var partItem = null;
+		var partText = '';
+		if(newLayer.pageItems.length > 0)
+			partItem = findPartText(newLayer.pageItems[0]);
+		if(partItem !== null){
+			partText = partItem.contents;
+			partItem.remove();
+		}
+		
         //3. 레이어별 파일 출력
-		var fileName = usePageItemName ? pageItem.name : Date.now();
+		var fileName = '';
+		if(usePageItemName) fileName = pageItem.name;
+		else if(partText !== '' ) fileName = partText;
+		else Date.now();
+		
         var file = new File(folder.fsName + '/' +fileName+".png");
         document.exportFile(file,ExportType.PNG24,options);
         //4. 레이어 삭제
@@ -243,6 +258,22 @@ function exportImage(layerName, usePageItemName) {
     }
     showAllLayers();
     //activeAB.artboardRect = abBounds;
+}
+
+function findPartText(item){
+	var stack = [];
+	stack.push(item);
+	while(stack.length > 0){
+		var curItem = stack.pop();
+		if(curItem.typename === 'GroupItem')
+			for(var i = 0; i<curItem.pageItems.length; i++)
+				stack.push(curItem.pageItems[i]);
+		else if(curItem.typename === 'TextFrame' && curItem.contents.length > 3){
+			return curItem;
+		}
+		else;
+	}
+	return null;
 }
 
 function forEach(collection, fn){
