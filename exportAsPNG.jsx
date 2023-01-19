@@ -99,7 +99,7 @@ function makeGroups(layerName){
 		}
 	}
 	sortItems(groups, exportLayer);
-	exportImage("exportLayer");
+	exportImage("exportLayer",false);
 	exportLayer.remove();
 }
 
