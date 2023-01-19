@@ -249,7 +249,7 @@ function exportImage(layerName, usePageItemName) {
 		var fileName = '';
 		if(usePageItemName) fileName = pageItem.name;
 		else if(partText !== '' ) fileName = partText;
-		else Date.now();
+		else fileName = Date.now();
 		
         var file = new File(folder.fsName + '/' +fileName+".png");
         document.exportFile(file,ExportType.PNG24,options);
