@@ -25,6 +25,7 @@ function exportImage() {
     hideAllLayers();
 	
     for(var i = 0; i<document.layers.length; i++){
+	if(document.layers[i].pageItems.length == 0) continue;
         document.layers[i].visible = true;
 		var fileName = document.layers[i].name;
         var file = new File(folder.fsName + '/' +fileName+".png");
